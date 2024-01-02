@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from Functions import custom_print
+import openpyxl
 
 st.set_page_config(
     page_title="Index rerum",
@@ -26,7 +27,7 @@ new_row_flags = [False, False, False, False, False, True, True, False, True, Tru
 link_flag = [False, False, False, False, True, False, False, False, False, False, False]
 
 # data preparation
-df = pd.read_excel("Demo Data.xlsx")
+df = pd.read_excel("Demo Data.xlsx", engine="openpyxl")
 df.fillna("-", inplace=True)
 to_lower_list = ["Понятие_rus", "Понятие_eng", "Понятие_ger", "Понятие_fr", "Терминологическое гнездо"]
 for col in to_lower_list:
