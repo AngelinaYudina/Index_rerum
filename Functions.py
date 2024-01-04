@@ -18,10 +18,10 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
             for word in words:
                 with st.expander(f"**{word}**"):
                     st.markdown("---")
-                    s1 = df["Понятие_rus"].str.contains(word)
-                    s2 = df["Понятие_eng"].str.contains(word)
-                    s3 = df["Понятие_ger"].str.contains(word)
-                    s4 = df["Понятие_fr"].str.contains(word)
+                    s1 = df["Понятие_rus"] == word
+                    s2 = df["Понятие_eng"] == word
+                    s3 = df["Понятие_ger"] == word
+                    s4 = df["Понятие_fr"] == word
                     df_search_res = df[s1 | s2 | s3 | s4]
                     data_list = [*df_search_res["Понятие_rus"].values, *df_search_res["Понятие_eng"].values,
                                  *df_search_res["Понятие_ger"].values, *df_search_res["Понятие_fr"].values,

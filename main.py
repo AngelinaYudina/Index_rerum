@@ -34,14 +34,22 @@ df.fillna("-", inplace=True)
 df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 to_lower_list = ["Понятие_rus", "Понятие_eng", "Понятие_ger", "Понятие_fr", "Терминологическое гнездо"]
 df_lower = pd.DataFrame()
+all_words_rus_matrix = df["Понятие_rus"].str.split(";\n").values
+all_words_rus = []
+for el_list in all_words_rus_matrix:
+    for el in el_list:
+        all_words_rus.append(el.strip())
 for col in to_lower_list:
     df_lower[col] = df[col].str.lower()
 rel_terms = dict()
 for i in range(len(df.values)):
     df_split = df.values[i][4].split(";\n")
     for el in df_split:
+        el = el.strip()
         if el.lower() not in rel_terms:
             rel_terms[el.lower()] = [df["Понятие_rus"].iloc[i]]
+            if el in all_words_rus:
+                rel_terms[el.lower()].append(el)
         else:
             rel_terms[el.lower()].append(df["Понятие_rus"].iloc[i])
 
@@ -95,10 +103,10 @@ with tab2_list:
     language_selected = st.selectbox("Выберите язык", options=["Rus", "Eng", "Ger", "Fr"])
     index = ["Rus", "Eng", "Ger", "Fr"].index(language_selected)
     for row in df.values:
-        with st.expander(f"**{row[index]}**"):
-            st.markdown("---")
-            data_list = [row[0], row[1], row[2], row[3], row[4], row[9], row[10], row[5], row[6], row[7],
-                         row[8]]
-            for i in range(len(data_list)):
-                custom_print(row[0], messages[i], data_list[i], rel_terms, new_row_flags[i], link_flag[i],
-                             is_search=False)
+        if row[index] != "-":
+            with st.expander(f"**{row[index]}**"):
+                st.markdown("---")
+                data_list = [row[0], row[1], row[2], row[3], row[4], row[9], row[10], row[5], row[6], row[7], row[8]]
+                for i in range(len(data_list)):
+                    custom_print(row[0], messages[i], data_list[i], rel_terms, new_row_flags[i], link_flag[i],
+                                 is_search=False)
