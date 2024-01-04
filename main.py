@@ -12,7 +12,9 @@ st.set_page_config(
     menu_items={
         "Report a bug": "mailto:avyudina_2@edu.hse.ru",
         "About": """
-        Автор: Ангелина Юдина ([GitHub](https://github.com/AngelinaYudina), [cайт](https://www.hse.ru/staff/ayudina))  
+        Сайт разработан в рамках проекта [«Основные понятия философии техники от Э. Каппа до STS. Index Rerum»](https://hum.hse.ru/proj/index_rerum) при поддержке фонда «Гуманитарные исследования» ФГН НИУ «Высшая школа экономики» в 2023-24 г.
+        
+        Разработчик: Ангелина Юдина ([GitHub](https://github.com/AngelinaYudina), [cайт](https://www.hse.ru/staff/ayudina))  
         Стажер-исследователь [Международного центра анализа и выбора решений НИУ ВШЭ](https://www.hse.ru/DeCAn/)
         """
     }
@@ -29,17 +31,19 @@ link_flag = [False, False, False, False, True, False, False, False, False, False
 # data preparation
 df = pd.read_excel("Demo Data.xlsx", engine="openpyxl")
 df.fillna("-", inplace=True)
+df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 to_lower_list = ["Понятие_rus", "Понятие_eng", "Понятие_ger", "Понятие_fr", "Терминологическое гнездо"]
+df_lower = pd.DataFrame()
 for col in to_lower_list:
-    df[col] = df[col].str.lower()
+    df_lower[col] = df[col].str.lower()
 rel_terms = dict()
 for i in range(len(df.values)):
     df_split = df.values[i][4].split(";\n")
     for el in df_split:
-        if el not in rel_terms:
-            rel_terms[el] = [df["Понятие_rus"].iloc[i]]
+        if el.lower() not in rel_terms:
+            rel_terms[el.lower()] = [df["Понятие_rus"].iloc[i]]
         else:
-            rel_terms[el].append(df["Понятие_rus"].iloc[i])
+            rel_terms[el.lower()].append(df["Понятие_rus"].iloc[i])
 
 # tabs
 tab1_search, tab2_list = st.tabs(["Поиск", "Список понятий"])
@@ -47,10 +51,10 @@ tab1_search, tab2_list = st.tabs(["Поиск", "Список понятий"])
 # search
 with tab1_search:
     user_input = st.text_input("Введите понятие", value="", key="search").lower().strip()
-    s1 = df["Понятие_rus"].str.contains(user_input)
-    s2 = df["Понятие_eng"].str.contains(user_input)
-    s3 = df["Понятие_ger"].str.contains(user_input)
-    s4 = df["Понятие_fr"].str.contains(user_input)
+    s1 = df_lower["Понятие_rus"].str.contains(user_input)
+    s2 = df_lower["Понятие_eng"].str.contains(user_input)
+    s3 = df_lower["Понятие_ger"].str.contains(user_input)
+    s4 = df_lower["Понятие_fr"].str.contains(user_input)
     df_search_res = df[s1 | s2 | s3 | s4]
     if user_input:
         if df_search_res.shape[0] == 0 or user_input == "-":
@@ -91,7 +95,7 @@ with tab2_list:
     language_selected = st.selectbox("Выберите язык", options=["Rus", "Eng", "Ger", "Fr"])
     index = ["Rus", "Eng", "Ger", "Fr"].index(language_selected)
     for row in df.values:
-        with st.expander(f"**{str(row[index]).capitalize()}**"):
+        with st.expander(f"**{row[index]}**"):
             st.markdown("---")
             data_list = [row[0], row[1], row[2], row[3], row[4], row[9], row[10], row[5], row[6], row[7],
                          row[8]]

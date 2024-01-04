@@ -7,16 +7,16 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
         st.write(message, data)
         words = set()
         for el in data_spl:
-            for word in rel_terms[el]:
+            for word in rel_terms[el.lower()]:
                 if word != current_word:
                     words.add(word)
+        if not words:
+            return
         if is_search:
-            if not words:
-                return
             st.write("Смежные понятия:")
             messages, df, new_row_flags, link_flag = data_rel
             for word in words:
-                with st.expander(f"**{word.capitalize()}**"):
+                with st.expander(f"**{word}**"):
                     st.markdown("---")
                     s1 = df["Понятие_rus"].str.contains(word)
                     s2 = df["Понятие_eng"].str.contains(word)
