@@ -23,13 +23,13 @@ st.title("Основные понятия философии техники от
 
 # global constants
 messages = ["Понятие на русском:", "Понятие на английском:", "Понятие на немецком:", "Понятие на французском:",
-            "Терминологическое гнездо:", "Определения:", "Цитаты:", "Ключевые авторы:", "Источники:",
-            "Институты и исследовательские группы:", "Предметные области:"]
-new_row_flags = [False, False, False, False, False, True, True, False, True, True, False]
-link_flag = [False, False, False, False, True, False, False, False, False, False, False]
+            "Переводы на другие языки:", "Терминологическое гнездо:", "Определения:", "Цитаты:", "Ключевые авторы:",
+            "Источники:", "Институты и исследовательские группы:", "Предметные области:"]
+new_row_flags = [False, False, False, False, False, False, True, True, False, True, True, False]
+link_flag = [False, False, False, False, False, True, False, False, False, False, False, False]
 
 # data preparation
-df = pd.read_excel("Demo Data.xlsx", engine="openpyxl")
+df = pd.read_excel("Data.xlsx", engine="openpyxl")
 df.fillna("-", inplace=True)
 df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 to_lower_list = ["Понятие_rus", "Понятие_eng", "Понятие_ger", "Понятие_fr", "Терминологическое гнездо"]
@@ -43,9 +43,11 @@ for col in to_lower_list:
     df_lower[col] = df[col].str.lower()
 rel_terms = dict()
 for i in range(len(df.values)):
-    df_split = df.values[i][4].split(";\n")
+    df_split = df.values[i][5].split(";\n")
     for el in df_split:
         el = el.strip()
+        if el == "-":
+            pass
         if el.lower() not in rel_terms:
             rel_terms[el.lower()] = [df["Понятие_rus"].iloc[i]]
             if el in all_words_rus:
@@ -71,9 +73,10 @@ with tab1_search:
             st.markdown("---")
             data_list = [*df_search_res["Понятие_rus"].values, *df_search_res["Понятие_eng"].values,
                          *df_search_res["Понятие_ger"].values, *df_search_res["Понятие_fr"].values,
-                         *df_search_res["Терминологическое гнездо"].values, *df_search_res["Определения"].values,
-                         *df_search_res["Цитаты"].values, *df_search_res["Ключевые авторы"].values,
-                         *df_search_res["Источники"].values, *df_search_res["Институты и исслед. группы"].values,
+                         *df_search_res["Понятие_иное"].values, *df_search_res["Терминологическое гнездо"].values,
+                         *df_search_res["Определения"].values, *df_search_res["Цитаты"].values,
+                         *df_search_res["Ключевые авторы"].values, *df_search_res["Источники"].values,
+                         *df_search_res["Институты и исслед. группы"].values,
                          *df_search_res["Предметные области"].values]
             for i in range(len(data_list)):
                 custom_print(*df_search_res["Понятие_rus"].values, messages[i], data_list[i], rel_terms,
@@ -83,15 +86,17 @@ with tab1_search:
             if s1.sum():
                 words = list(df_search_res["Понятие_rus"])
             else:
-                l_name = ["Понятие_eng", "Понятие_ger", "Понятие_fr"][np.array([s2.sum(), s3.sum(), s4.sum()]).argmax()]
-                words = list(df_search_res[l_name])
+                eng_words = list(df["Понятие_eng"][s2].values)
+                ger_words = list(df["Понятие_ger"][s3 & np.logical_not(s2)].values)
+                fr_words = list(df["Понятие_fr"][s4 & np.logical_not(s2) & np.logical_not(s3)].values)
+                words = eng_words + ger_words + fr_words
             word_selected = st.selectbox("По вашему запросу найдено несколько понятий", index=None,
                                          placeholder="Выберите подходящее понятие...", options=words)
             st.markdown("---")
             for row in df_search_res.values:
                 if word_selected in [row[0], row[1], row[2], row[3]]:
-                    data_list = [row[0], row[1], row[2], row[3], row[4], row[9], row[10], row[5], row[6], row[7],
-                                 row[8]]
+                    data_list = [row[0], row[1], row[2], row[3], row[4], row[5], row[10], row[11], row[6], row[7],
+                                 row[8], row[9]]
                     for i in range(len(data_list)):
                         custom_print(row[0], messages[i], data_list[i], rel_terms, new_row_flags[i], link_flag[i],
                                      data_rel=[messages, df, new_row_flags, link_flag])
@@ -106,7 +111,8 @@ with tab2_list:
         if row[index] != "-":
             with st.expander(f"**{row[index]}**"):
                 st.markdown("---")
-                data_list = [row[0], row[1], row[2], row[3], row[4], row[9], row[10], row[5], row[6], row[7], row[8]]
+                data_list = [row[0], row[1], row[2], row[3], row[4], row[5], row[10], row[11], row[6], row[7], row[8],
+                             row[9]]
                 for i in range(len(data_list)):
                     custom_print(row[0], messages[i], data_list[i], rel_terms, new_row_flags[i], link_flag[i],
                                  is_search=False)

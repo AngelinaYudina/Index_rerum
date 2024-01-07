@@ -25,10 +25,10 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
                     df_search_res = df[s1 | s2 | s3 | s4]
                     data_list = [*df_search_res["Понятие_rus"].values, *df_search_res["Понятие_eng"].values,
                                  *df_search_res["Понятие_ger"].values, *df_search_res["Понятие_fr"].values,
+                                 *df_search_res["Понятие_иное"].values,
                                  *df_search_res["Терминологическое гнездо"].values,
-                                 *df_search_res["Определения"].values,
-                                 *df_search_res["Цитаты"].values, *df_search_res["Ключевые авторы"].values,
-                                 *df_search_res["Источники"].values,
+                                 *df_search_res["Определения"].values, *df_search_res["Цитаты"].values,
+                                 *df_search_res["Ключевые авторы"].values, *df_search_res["Источники"].values,
                                  *df_search_res["Институты и исслед. группы"].values,
                                  *df_search_res["Предметные области"].values]
                     for i in range(len(data_list)):
@@ -36,6 +36,8 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
                                      is_search=False)
         else:
             st.write("Смежные понятия:", "; ".join(list(words)))
+    elif message == "Переводы на другие языки:" and data == "-":
+        return
     elif data_spl[0] == "-" or not new_row:
         st.write(message, data)
     elif len(data_spl) == 1:
