@@ -48,7 +48,7 @@ for i in range(len(df.values)):
         el = el.strip()
         if el == "-":
             pass
-        if el.lower() not in rel_terms:
+        elif el.lower() not in rel_terms:
             rel_terms[el.lower()] = [df["Понятие_rus"].iloc[i]]
             if el in all_words_rus:
                 rel_terms[el.lower()].append(el)

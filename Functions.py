@@ -7,6 +7,8 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
         st.write(message, data)
         words = set()
         for el in data_spl:
+            if el == "-":
+                return
             for word in rel_terms[el.lower()]:
                 if word != current_word:
                     words.add(word)
