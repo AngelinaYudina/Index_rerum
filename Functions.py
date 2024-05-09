@@ -4,7 +4,7 @@ import streamlit as st
 def custom_print(current_word, message, data, rel_terms, new_row, link_flag=False, is_search=True, data_rel=None):
     data_spl = data.split(";\n")
     if link_flag:
-        st.write(message, data)
+        st.write(f"**{message}** {data}")
         words = set()
         for el in data_spl:
             if el == "-":
@@ -37,15 +37,16 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
                         custom_print(word, messages[i], data_list[i], rel_terms, new_row_flags[i], link_flag[i],
                                      is_search=False)
         else:
-            st.write("Смежные понятия:", "; ".join(list(words)))
+            st.write(f"**Смежные понятия:** {'; '.join(list(words))}")
     elif message == "Переводы на другие языки:" and data == "-":
         return
     elif data_spl[0] == "-" or not new_row:
-        st.write(message, data)
+        st.write(f"**{message}** {data}")
     elif len(data_spl) == 1:
-        st.write(message)
+        st.write(f"**{message}**")
         st.write(data)
     else:
-        st.write(message)
+        st.write(f"**{message}**")
         for i in range(len(data_spl)):
-            st.write(f"{i + 1}) {data_spl[i]}")
+            text_res = str(i+1) + "\) " + data_spl[i]
+            st.markdown(text_res, unsafe_allow_html=True)

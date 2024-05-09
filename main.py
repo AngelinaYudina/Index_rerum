@@ -19,6 +19,16 @@ st.set_page_config(
         """
     }
 )
+
+style = '''
+    <style>
+        p {
+            text-align: justify;
+        }
+    </style>
+    '''
+st.markdown(style, unsafe_allow_html=True)
+
 st.title("Основные понятия философии техники от Э. Каппа до STS. Index rerum")
 
 # global constants
