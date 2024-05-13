@@ -15,7 +15,7 @@ def custom_print(current_word, message, data, rel_terms, new_row, link_flag=Fals
         if not words:
             return
         if is_search:
-            st.write("Смежные понятия:")
+            st.write("**Смежные понятия:**")
             messages, df, new_row_flags, link_flag = data_rel
             for word in words:
                 with st.expander(f"**{word}**"):
